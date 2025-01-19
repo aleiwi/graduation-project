@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to right, #FAFAFA 0%,#FCFCFC 100%)
+}
+header {
+    z-index: 10001 !important;
+}
+.section-container {
+    @apply max-w-screen-2xl mx-auto container px-4 xl:px-24 bg-gradient-to-r from-[#FAFAFA] from-0% to-[#FCFCFC] to-100% 
+}
+.title {
+    @apply font-bold  text-[#000] text-3xl md:text-4xl my-2 leading-snug md:leading-snug capitalize
+}
+.subtitle {
+    @apply font-medium text-lg text-red uppercase tracking-wide
+}
+.footer a {
+    color: #555;
+    font-weight: 500;
+}
+.active {
+    color: #39DB4A;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
