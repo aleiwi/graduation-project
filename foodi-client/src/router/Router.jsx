@@ -5,7 +5,7 @@ import Menu from "../pages/shop/Menu";
 import Signup from "../components/Signup";
 import Login from "../components/Login"; // Import the Login component
 import PrivateRouter from "../PrivateRouter/PrivateRouter";
-import UpdateProfile from "../components/dashboard/UpdateProfile.JSX";
+import UpdateProfile from "../components/dashboard/UpdateProfile";
 import CartPage from "../pages/shop/CartPage";
 
 const router = createBrowserRouter([
