@@ -36,7 +36,7 @@ const Signup = () => {
   };
 
   return (
-    <section className="flex items-center justify-center h-screen ">
+    <section className="flex items-center justify-center h-screen  ">
       <div className=" modal-box  max-h-[calc(100vh-3em)] ">
         <div className="modal-action mt-0 flex flex-col mx-auto">
           <form

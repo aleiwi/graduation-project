@@ -19,7 +19,7 @@ const CartPage = () => {
 
     // Handle quantity inc
   const handleIncrease = async (item) => {
-    fetch(`http://localhost:6001/carts/${item._id}`, {
+    fetch(`https://foodi-server-chek.onrender.com /carts/${item._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
@@ -51,7 +51,7 @@ const CartPage = () => {
     if (item.quantity > 1) {
       try {
         const response = await fetch(
-          `http://localhost:6001/carts/${item._id}`,
+          `https://foodi-server-chek.onrender.com/carts/${item._id}`,
           {
             method: "PUT",
             headers: {
@@ -83,9 +83,9 @@ const CartPage = () => {
   };
 
   // Calculate the cart subtotal
-  const cartSubtotal = cart.reduce((total, item) => {
-    return total + calculateTotalPrice(item);
-  }, 0);
+  const cartSubtotal = Array.isArray(cart)
+  ? cart.reduce((total, item) => total + calculateTotalPrice(item), 0)
+  : 0;
 
   // Calculate the order total
   const orderTotal = cartSubtotal;
@@ -102,7 +102,7 @@ const CartPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:6001/carts/${item._id}`, { method: "DELETE" })
+        fetch(`https://foodi-server-chek.onrender.com/carts/${item._id}`, { method: "DELETE" })
           .then((res) => res.json())
           .then((data) => {
             if (data.deletedCount > 0) {

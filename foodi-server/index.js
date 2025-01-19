@@ -1,110 +1,73 @@
 const express = require("express");
-const cors = require("cors");
-
 const app = express();
-const port = process.env.PORT || 6001;
-
+const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
+const port = process.env.PORT || 5000;
 
-// Middleware
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
+const jwt = require('jsonwebtoken');
+
+// middleware
 app.use(cors());
 app.use(express.json());
 
-//aleiwi9
-//aARq9rIq3XGjBZq4
+mongoose
+  .connect(
+    `mongodb+srv://mdalmamunit427:ozSrSAMqUgIMVq2S@foodcluster.nmh4fwz.mongodb.net/foodi-client?retryWrites=true&w=majority`
+  )
+  .then(console.log("Mongodb connected successfully!"))
+  .catch((error) => console.log("Error connecting to MongoDB: " + error));
 
-// mongodb config
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@demo-foodi-cluster.zm47a.mongodb.net/?retryWrites=true&w=majority&appName=demo-foodi-cluster"`;
+// jwt authentication
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
+// jwt related api
+app.post("/jwt", async (req, res) => {
+  const user = req.body;
+  // console.log(user)
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
+  res.send({ token });
 });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-
-    // database and collections
-    const menuCollections = client.db("demo-foodi-client").collection("menus");
-    const cartCollections = client
-      .db("demo-foodi-client")
-      .collection("cartItems");
-
-    // all menu items operations
-    app.get("/menu", async (req, res) => {
-      const result = await menuCollections.find().toArray();
-      res.send(result);
-    });
-
-    /* all carts operations*/
-
-    // posting cart to db
-    app.post("/carts", async (req, res) => {
-      const cartItem = req.body;
-      const result = await cartCollections.insertOne(cartItem);
-      res.send(result);
-    });
-
-    // get carts using email
-    app.get("/carts", async (req, res) => {
-      const email = req.query.email;
-      const filter = { email: email };
-      const result = await cartCollections.find(filter).toArray();
-      res.send(result);
-    });
-
-    // get specific cart
-    app.get("/carts", async (req, res) => {
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const result = await cartCollections.findOne(filter);
-      res.send(result);
-    });
-    // delete items from cart
-    app.delete("/carts/:id", async (req, res) => {
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const result = await cartCollections.deleteOne(filter);
-      res.send(result);
-    });
-
-    // update carts quantity
-    app.put("/carts/:id", async (req, res) => {
-      const id = req.params.id;
-      const { quantity } = req.body;
-      const filter = { _id: new ObjectId(id) };
-      const option = { upsert: true };
-    
-      const updateDoc = {
-        $set: {
-          quantity: parseInt(quantity, 10),
-        },
-      };
-      const result = await cartCollections.updateOne(filter, updateDoc, option);
-      res.send(result);
-    });
-    
+// import routes
+const menuRoutes = require("./api/routes/menuRoutes");
+const cartsRoutes = require("./api/routes/cartRoutes");
+const usersRoutes = require("./api/routes/userRoutes");
+const paymentRoutes = require("./api/routes/paymentRoutes");
+const adminStats =  require('./api/routes/adminStats');
+ const orderStats = require('./api/routes/orderStats')
+app.use("/menu", menuRoutes);
+app.use("/carts", cartsRoutes);
+app.use("/users", usersRoutes);
+app.use("/payments", paymentRoutes);
+app.use('/admin-stats', adminStats);
+app.use('/order-stats', orderStats);
 
 
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
-  } finally {
-    // await client.close();
-  }
-}
-run().catch(console.dir);
+// payment methods routes
+const verifyToken = require('./api/middlewares/verifyToken')
+
+app.post("/create-payment-intent",verifyToken, async (req, res) => {
+  const { price } = req.body;
+  const amount = price*100;
+  // console.log(amount);
+
+  // Create a PaymentIntent 
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: "usd",
+    payment_method_types: ["card"],
+  });
+
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
 
 app.get("/", (req, res) => {
-  res.send("Hello Worlddd!");
+  res.send("Foodi Server is Running!");
 });
 
 app.listen(port, () => {
