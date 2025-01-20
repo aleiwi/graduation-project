@@ -96,7 +96,7 @@ const Cards = ({ item }) => {
           onClick={handleHeartClick}
         />
       </div>
-      <Link to={`/menu/${item._id}`}>
+      <Link to="">
         <figure>
           <img
             src={item.image}

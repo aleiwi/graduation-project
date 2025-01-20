@@ -36,7 +36,7 @@ const Footer = () => {
           <h6 className="footer-title capitalize text-black opacity-100">
             Contact Us
           </h6>
-          <a className="link link-hover">foodi@gemail.com</a>
+          <a className="link link-hover">foodi@gmail.com</a>
           <a className="link link-hover">+90555000000</a>
           <a className="link link-hover">Social media</a>
         </nav>
