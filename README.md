@@ -1,7 +1,5 @@
 # Foodi Restaurant MERN Project
 
-![Foodi Restaurant Cover Image](/cover-image.png)
-
 ## Table of Contents
 - [Overview](#overview)
 - [Install](#install)
